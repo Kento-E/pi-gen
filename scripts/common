@@ -17,7 +17,11 @@ bootstrap(){
 	BOOTSTRAP_ARGS+=("$@")
 	printf -v BOOTSTRAP_STR '%q ' "${BOOTSTRAP_ARGS[@]}"
 
-	setarch linux32 capsh $CAPSH_ARG -- -c "'${BOOTSTRAP_CMD}' $BOOTSTRAP_STR" || true
+	if setarch linux32 true 2>/dev/null; then
+		setarch linux32 capsh $CAPSH_ARG -- -c "'${BOOTSTRAP_CMD}' $BOOTSTRAP_STR" || true
+	else
+		capsh $CAPSH_ARG -- -c "'${BOOTSTRAP_CMD}' $BOOTSTRAP_STR" || true
+	fi
 	
 	# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1050719
 	rm -f wget-log*
@@ -103,7 +107,11 @@ on_chroot() {
 		mount -t tmpfs  tmpfs "${ROOTFS_DIR}/tmp"
 	fi
 
-	setarch linux32 capsh $CAPSH_ARG "--chroot=${ROOTFS_DIR}/" -- -e "$@"
+	if setarch linux32 true 2>/dev/null; then
+		setarch linux32 capsh $CAPSH_ARG "--chroot=${ROOTFS_DIR}/" -- -e "$@"
+	else
+		capsh $CAPSH_ARG "--chroot=${ROOTFS_DIR}/" -- -e "$@"
+	fi
 }
 export -f on_chroot
 
