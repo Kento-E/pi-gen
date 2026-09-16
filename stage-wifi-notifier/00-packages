@@ -6,3 +6,6 @@ ca-certificates
 tzdata
 locales
 network-manager
+unattended-upgrades
+apt-listchanges
+avahi-daemon
